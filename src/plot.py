@@ -197,7 +197,7 @@ def regret_legend():
             handles[i].set_linestyle('-')
     # do not include axes in the figure and save only the legend
     plt.gca().set_axis_off()
-    plt.legend(handles=handles, labels=labels, title='', ncol=2, loc='center', fontsize=80, frameon=False)
+    plt.legend(handles=handles, labels=labels, title='', ncol=2, loc='center', fontsize=80, frameon=True)
     plt.savefig(f"figures/legend/regret_legend.pdf", bbox_inches='tight')
     plt.clf()        
 
