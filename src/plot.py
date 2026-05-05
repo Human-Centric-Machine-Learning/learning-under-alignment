@@ -211,10 +211,10 @@ if __name__ == "__main__":
         ds_names = regret_df_full['dataset'].unique()
         add_legend = False 
         for ds_name in tqdm(ds_names):
-
+            
             fig_path = f"figures/{fig_path_id}/{config['num_iterations']}/{ds_name}"
             p_y_given_b_h_b(f"{config['data_dir']}/{ds_name}.csv", config, fig_path)    
-            continue
+        
             regret_df = regret_df_full[regret_df_full['dataset'] == ds_name].copy()
             avg_regret_path = f"{config['output_dir']}/avg_regret/{config['num_iterations']}/{ds_name}"
             fig_path = f"figures/{fig_path_id}/{config['num_iterations']}/{ds_name}"
