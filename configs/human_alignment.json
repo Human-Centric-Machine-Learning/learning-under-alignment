@@ -1,0 +1,44 @@
+{
+    "data_dir": "data/human_alignment_data/processed",
+    "datasets": [
+        "group_A.csv",
+        "group_B.csv",
+        "group_C.csv",  
+        "group_BP.csv"
+    ],
+    "data_types":{
+        "dm_conf": "str",
+        "AI_conf": "int",
+        "true_prob": "float"
+    },
+    "use_outcome_prob": true,
+    "b_int": true,
+    "_dataset_comment": "'group_B_calibration.csv' NOTE: the AI conf is missing from the post processed data.",
+    "column_label_mapping": {
+        "human_conf_label": "dm_conf",
+        "AI_conf_label": "AI_conf",
+        "outcome_prob": "true_prob"
+    },
+    "output_dir": "outputs/human_alignment",
+    "log_dir": "outputs/human_alignment/logs",
+    "optimal_path_actions": "outputs/human_alignment/optimal_policies/actions",
+    "master_seed": 984579384750,
+    "num_iterations": 100,
+    "algorithms": [
+        "vanilla_contextual",
+        "algorithm_one",
+        "optimal"
+    ],
+    "utility": [
+        [1, -1],
+        [-1, 1]
+    ],
+    "Bmin": 1,
+    "Bmax": 100,
+    "human_conf_order": [
+        "very low",
+        "low",
+        "high",
+        "very high"
+    ]
+}

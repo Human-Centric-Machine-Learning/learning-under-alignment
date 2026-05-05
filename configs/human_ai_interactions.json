@@ -1,0 +1,43 @@
+{
+    "data_dir": "data/human_ai_interactions_data/processed",
+    "datasets": [
+        "data_art.csv",
+        "data_census.csv",
+        "data_cities.csv",  
+        "data_sarcasm.csv"
+    ],
+    "data_types":{
+        "h_bin": "str",
+        "b_bin": "float",
+        "y": "int"
+    },
+    "column_label_mapping": {
+        "human_conf_label": "h_bin",
+        "AI_conf_label": "b_bin",
+        "outcome": "y"
+    },
+    "use_outcome_prob": false,
+    "b_int": false,
+    "output_dir": "outputs/human_ai_interactions",
+    "log_dir": "outputs/human_ai_interactions/logs",
+    "optimal_path_actions": "outputs/human_ai_interactions/optimal_policies/actions",
+    "master_seed": 984579384750,
+    "num_iterations": 100,
+    "algorithms": [
+        "vanilla_contextual",
+        "algorithm_one",
+        "optimal"
+    ],
+    "utility": [
+        [1, -1],
+        [-1, 1]
+    ],
+    "Bmin": 0.0,
+    "Bmax": 1.0,
+    "human_conf_order": [
+        "0.25",
+        "0.5",
+        "0.75",
+        "1.0"
+    ]
+}
