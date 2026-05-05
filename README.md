@@ -4,7 +4,7 @@ This repository contains the code and data for the paper
 ## Dependencies
 
 ### Python
-All experiments were performed using Python 3.13.5 To create a virtual environment and install dependencies:
+All experiments were performed using Python 3.13.5 To create a virtual environment and install dependencies run:
 
 
 ```bash
@@ -12,8 +12,6 @@ python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
-
-
 
 ## Repository structure
 
@@ -51,7 +49,7 @@ pip install -r requirements.txt
 
 ## Running experiments
 
-To run the online learning algorithms and the optimal decision policy for an entire dataset:
+To run the online learning algorithms and the optimal decision policy for an entire dataset run:
 
 ```bash
 ./scripts/<dataset_name>.sh 
@@ -60,10 +58,10 @@ where `<dataset_name>` is one of `human_ai_interactions` and `human_alignment`.
 
 ### Output
 
-Results are saved to the `output_dir` specified in the config (default: `outputs/`). Executor logs are saved to `log_dir` (default: `outputs/logs`). The optimal decisions are saved under `optimal_path_actions` specific in the respective config file. To generate the plots used in the paper run 
+Results are saved to the `output_dir` specified in the config (default: `outputs/<dataset_name>`). If the `DEBUG` flag in `experiment.py`  is set to `True` logs are saved to `log_dir` (default: `outputs/<dataset_name>/logs`) otherwise no logs are printed. The optimal decisions are saved under `optimal_path_actions` (default: `outputs/<dataset_name>/optimal_policies/actions`) specified in the respective config file. To generate the plots used in the paper run: 
 
 ```
 python3 -m src.plot
 ```
 
-The plots are saved under `figures` by default.
+The plots are saved under `figures/<dataset_name>/<num_iterations>` by default, where `<num_iterations>` is specified in each config file by `num_iterations`.
