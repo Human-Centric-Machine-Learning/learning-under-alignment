@@ -1,6 +1,7 @@
 # Learning to Decide with AI-Assistance under Human-Alignment
 
-This repository contains the code and data for the paper 
+This repository contains the code and data for the paper "Learning to Decide with AI-Assistance under Human-Alignment".
+
 ## Dependencies
 
 ### Python
