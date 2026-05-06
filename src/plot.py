@@ -120,7 +120,7 @@ def p_y_given_b_h_b(data_path, config, fig_path):
     plt.yticks(np.arange(0.5, 1.1, 0.5))
     plt.xticks(np.arange(0, 1.1, 0.1))
     plt.xlabel(r'AI confidence $b$')
-    plt.ylabel(r'$P(Y=1\,|\,H=h,B=b)$')
+    plt.ylabel(r'$P(Y=1\,|\,H=h,B=b)$', fontsize=45)
 
     # remove the legend completely     
     plt.legend().remove()
