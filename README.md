@@ -1,6 +1,6 @@
 # Learning to Decide with AI-Assistance under Human-Alignment
 
-This repository contains the code and data for the paper "Learning to Decide with AI-Assistance under Human-Alignment".
+This repository contains the code and data for the paper ["Learning to Decide with AI-Assistance under Human-Alignment"](https://arxiv.org/abs/2510.16097).
 
 ## Dependencies
 
@@ -57,7 +57,7 @@ To run the online learning algorithms and the optimal decision policy for an ent
 ```
 where `<dataset_name>` is one of `human_ai_interactions` and `human_alignment`.
 
-### Output
+## Results and plots
 
 Results are saved to the `output_dir` specified in the config (default: `outputs/<dataset_name>`). If the `DEBUG` flag in `experiment.py`  is set to `True` logs are saved to `log_dir` (default: `outputs/<dataset_name>/logs`) otherwise no logs are printed. The optimal decisions are saved under `optimal_path_actions` (default: `outputs/<dataset_name>/optimal_policies/actions`) specified in the respective config file. To generate the plots used in the paper run: 
 
@@ -66,3 +66,15 @@ python3 -m src.plot
 ```
 
 The plots are saved under `figures/<dataset_name>/<num_iterations>` by default, where `<num_iterations>` is specified in each config file by `num_iterations`.
+
+## Citation
+
+If you use parts of the code in this repository for your own research, please consider citing: 
+```
+@article{benz2026learning,
+  title={Learning to Decide with AI Assistance under Human-Alignment},
+  author={Benz, Nina Corvelo and Straitouri, Eleni and Gomez-Rodriguez, Manuel},
+  journal={arXiv preprint arXiv:2605.12646},
+  year={2026}
+}
+```
