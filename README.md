@@ -30,7 +30,7 @@ pip install -r requirements.txt
 │   ├── human_ai_interactions.sh
 │   └── human_alignment.sh
 └── src/
-    ├── bandits.py
+    ├── algorithms.py
     ├── experiment.py
     ├── plot.py
     └── utils.py
@@ -43,7 +43,7 @@ pip install -r requirements.txt
 - `outputs/` — Experiment results (JSON files)
 - `scripts/` — Shell scripts to run the experiment for each dataset
 - `src/` — Source code:
-  - `bandits.py` — Deploys our online learning algorithm, the contextual vanilla baseline and the optimal policy  
+  - `algorithms.py` — Deploys our online learning algorithm, the contextual vanilla baseline and the optimal policy  
   - `experiment.py` — Main experiment loop 
   - `utils.py` — Utility functions to find the optimal decision policy 
   - `plot.py` — Generates plots and legends 

@@ -27,6 +27,9 @@
     "algorithms": [
         "vanilla_contextual",
         "algorithm_one",
+        "isotonic_regression",
+        "hedge",
+        "sleeping_experts_hedge",
         "optimal"
     ],
     "utility": [

@@ -69,8 +69,11 @@ def compute_regret_df(config_file="configs/human_alignment.json"):
 
 
 algorithm_mapping = {
-    "vanilla_contextual": "Algorithm 2 (vanilla baseline)", 
+    "vanilla_contextual": "Algorithm 2 (vanilla baseline)",
     "algorithm_one": "Algorithm 1 (ours)",
+    "isotonic_regression": "Online Isotonic Regression",
+    "hedge": "Hedge Algorithm",
+    "sleeping_experts_hedge": "Sleeping-Experts Hedge"
 }
 dataset_mapping = {
     "group_A": "Group A",

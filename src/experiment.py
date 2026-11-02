@@ -1,6 +1,6 @@
 import os
 from utils import get_optimal_actions
-from bandits import algorithm_one, vanilla_contextual, optimal_action   
+from algorithms import algorithm_one, vanilla_contextual, optimal_action, isotonic_regression, hedge, sleeping_experts_hedge
 from copy import deepcopy
 import json 
 import numpy as np
@@ -55,6 +55,12 @@ def single_experiment(algorithm_name, dataset, rng, num_iterations, utility, opt
             rewards, actions = algorithm_one(horizon, utility, rng, Bmin=Bmin, Bmax=Bmax, b_int=b_int)
         elif algorithm_name == "vanilla_contextual":
             rewards, actions = vanilla_contextual(horizon, utility, rng)
+        elif algorithm_name == "isotonic_regression":
+            rewards, actions = isotonic_regression(horizon, utility, rng)
+        elif algorithm_name == "hedge":
+            rewards, actions = hedge(horizon, utility, rng)
+        elif algorithm_name == "sleeping_experts_hedge":
+            rewards, actions = sleeping_experts_hedge(horizon, utility, rng)
         elif algorithm_name == "optimal":
             rewards, actions = optimal_action(horizon, utility, optimal_action_dict)
         else:
