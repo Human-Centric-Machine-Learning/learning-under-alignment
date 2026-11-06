@@ -209,3 +209,5 @@ __marimo__/
 # outputs
 outputs/
 figures/
+# local-only algorithms not used in the paper figures
+src/extra_algorithms.py

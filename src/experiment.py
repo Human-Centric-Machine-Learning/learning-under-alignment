@@ -1,6 +1,7 @@
 import os
+from collections import defaultdict
 from utils import get_optimal_actions
-from algorithms import algorithm_one, vanilla_contextual, optimal_action, isotonic_regression, hedge, sleeping_experts_hedge
+from algorithms import algorithm_one, vanilla_contextual, optimal_action, isotonic_regression, follow_the_leader
 from copy import deepcopy
 import json 
 import numpy as np
@@ -10,7 +11,7 @@ import tqdm
 
 DEBUG = False
 
-def single_experiment(algorithm_name, dataset, rng, num_iterations, utility, optimal_action_dict={}, use_outcome_prob=True, Bmin=1, Bmax=100, b_int=True):
+def single_experiment(algorithm_name, dataset, rng, num_iterations, utility, optimal_action_dict={}, use_outcome_prob=True, Bmin=1, Bmax=100, b_int=True, horizon_seed=(0,)):
     """Run a single algorithm on a single dataset for num_iterations
        iterations and return the rewards and actions.
 
@@ -26,24 +27,37 @@ def single_experiment(algorithm_name, dataset, rng, num_iterations, utility, opt
        Bmin: minimum machine confidence  (only used for algorithm_one)
        Bmax: maximum machine confidence  (only used for algorithm_one)
        b_int: whether to use integer machine confidence values (only used for algorithm_one)
+       horizon_seed: Tuple, seed for the shuffle and sampled outcomes of each iteration; it does not
+                     depend on the algorithm, so all algorithms (and the optimal policy) see the same
+                     horizon in a given iteration and the regret is computed on identical data
 
        Returns:
        results: Dict, dictionary containing the rewards and actions for each timestep in each iteration
     """
+    b_domain = None
+    if algorithm_name == "follow_the_leader":
+        # the comparator set of threshold experts per context h_t is fixed by
+        # the dataset itself, not by iteration order, so read it once here
+        # instead of re-deriving it from the shuffled horizon every iteration
+        b_domain = defaultdict(set)
+        for h_t, b_t, _ in dataset:
+            b_domain[h_t].add(b_t)
+
     results = []
     for iteration in tqdm.tqdm(range(num_iterations)):
         if DEBUG:
             print(f"Running iteration {iteration} for algorithm {algorithm_name}")
 
-        # shuffle the dataset 
-        shuffled_dataset = rng.permutation(deepcopy(dataset))
+        # shuffle the dataset (same shuffle and outcomes for every algorithm in this iteration)
+        horizon_rng = np.random.default_rng([*horizon_seed, iteration])
+        shuffled_dataset = horizon_rng.permutation(deepcopy(dataset))
 
         if use_outcome_prob:
             # samples outcomes based on the probabilities in the dataset
             probabilities = shuffled_dataset[:, 2].astype(float) / 100 # assuming the probabilities are in the third column and are between 0 and 100
             if DEBUG:
                 print(f"Probability sample at iteration {iteration}: {probabilities[:5]}")
-            outcomes = rng.binomial(1, probabilities) 
+            outcomes = horizon_rng.binomial(1, probabilities)
             # create the horizon as a list of tuples (h_t, b_t, y_t)
             shuffled_dataset[:, 2] = outcomes
         horizon = shuffled_dataset
@@ -57,10 +71,8 @@ def single_experiment(algorithm_name, dataset, rng, num_iterations, utility, opt
             rewards, actions = vanilla_contextual(horizon, utility, rng)
         elif algorithm_name == "isotonic_regression":
             rewards, actions = isotonic_regression(horizon, utility, rng)
-        elif algorithm_name == "hedge":
-            rewards, actions = hedge(horizon, utility, rng)
-        elif algorithm_name == "sleeping_experts_hedge":
-            rewards, actions = sleeping_experts_hedge(horizon, utility, rng)
+        elif algorithm_name == "follow_the_leader":
+            rewards, actions = follow_the_leader(horizon, utility, rng, b_domain=b_domain)
         elif algorithm_name == "optimal":
             rewards, actions = optimal_action(horizon, utility, optimal_action_dict)
         else:
@@ -156,7 +168,8 @@ def run(config_file="configs/human_alignment.json", job_id=0):
                                 use_outcome_prob=config["use_outcome_prob"],
                                 Bmin=config["Bmin"],
                                 Bmax=config["Bmax"],
-                                b_int=config["b_int"]
+                                b_int=config["b_int"],
+                                horizon_seed=(config["master_seed"], job_id % len(config["datasets"]))
                             )
 
     # save results to json file

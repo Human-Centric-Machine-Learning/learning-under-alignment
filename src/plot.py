@@ -72,8 +72,7 @@ algorithm_mapping = {
     "vanilla_contextual": "Algorithm 2 (vanilla baseline)",
     "algorithm_one": "Algorithm 1 (ours)",
     "isotonic_regression": "Online Isotonic Regression",
-    "hedge": "Hedge Algorithm",
-    "sleeping_experts_hedge": "Sleeping-Experts Hedge"
+    "follow_the_leader": "Follow-The-Leader",
 }
 dataset_mapping = {
     "group_A": "Group A",
@@ -97,6 +96,30 @@ mapping = {
     "algorithm": algorithm_mapping,
     "dataset": dataset_mapping
 }
+LEGEND_LINEWIDTH = 10
+
+
+def regret_lineplot_kwargs():
+    """Shared styling for regret curves, so regret() and regret_legend() always agree."""
+    labels = algorithm_mapping
+    # colorblind slots 0,1,2,4: slot 3 (vermillion) is too close to slot 1 (orange)
+    colorblind = sns.color_palette("colorblind")
+    palette = {label: colorblind[i] for label, i in zip(labels.values(), (0, 1, 2, 4))}
+    # distinct dash patterns (in units of linewidth) so overlapping curves stay distinguishable
+    dashes = {
+        labels["vanilla_contextual"]: "",
+        labels["algorithm_one"]: (4, 1.5),
+        labels["isotonic_regression"]: (4, 1.5, 1, 1.5),
+        labels["follow_the_leader"]: (1, 1.5),
+    }
+    # seaborn draws in hue order, so the last entry ends up on top: draw Algorithm 1 last
+    hue_order = [labels[a] for a in ("vanilla_contextual", "isotonic_regression", "follow_the_leader", "algorithm_one")]
+    return dict(
+        hue="algorithm", hue_order=hue_order,
+        style="algorithm", style_order=hue_order,
+        palette=palette, dashes=dashes,
+        linewidth=5, err_kws={"alpha": 0.1},
+    )
 
 
 def p_y_given_b_h_b(data_path, config, fig_path):
@@ -147,11 +170,13 @@ def regret(regret_df, avg_regret_path='', fig_path='', hue="algorithm", add_lege
     else:
         data = pd.read_csv(f"{avg_regret_path}/avg_regret.csv")
 
-    # Map algorithm names to more readable labels
-    data[hue] = data[hue].map(mapping[hue]) 
+    # keep only the plotted algorithms (cached csvs may hold others), then map
+    # algorithm names to more readable labels
+    data = data[data[hue].isin(mapping[hue].keys())].copy()
+    data[hue] = data[hue].map(mapping[hue])
     data.rename_axis(columns={hue: hue.capitalize()}, inplace=True)
-    ax = sns.lineplot(data=data, x='timestep', y='regret_avg', hue=hue, style=hue, palette=sns.color_palette("colorblind", n_colors=len(mapping[hue])))
-         
+    ax = sns.lineplot(data=data, x='timestep', y='regret_avg', **regret_lineplot_kwargs())
+
     # plot no legend and then add the legend outside of the plot
     plt.xlabel(r'$t$')  
     plt.ylabel(r'Empirical Avg. Regret')    
@@ -187,22 +212,32 @@ def alignment_legend():
 
 def regret_legend():
     """Plot the legend for the regret figure, which shows the different algorithms with different colors and line styles, and save the legend in a separate file."""
-    # create figure twice as large as normal to fit the legend and save it in a file alone 
+    # build the handles from an actual sns.lineplot call with the same styling
+    # used in regret(), so the legend's colors and dash patterns are guaranteed
+    # to match the real chart (seaborn's dash-pattern cycling can't be
+    # reproduced by hand)
+    hue_order = list(mapping["algorithm"].values())
+    dummy = pd.DataFrame({
+        "timestep": [0, 1] * len(hue_order),
+        "regret_avg": [0, 0] * len(hue_order),
+        "algorithm": [label for label in hue_order for _ in range(2)],
+    })
+    dummy_ax = sns.lineplot(data=dummy, x="timestep", y="regret_avg", **regret_lineplot_kwargs())
+    handles, labels = dummy_ax.get_legend_handles_labels()
+    # thicker than in the chart so swatches stay legible at paper scale; dash
+    # patterns scale with linewidth, so each pattern keeps its shape
+    for h in handles:
+        h.set_linewidth(LEGEND_LINEWIDTH)
+    plt.clf()
+
+    # create figure twice as large as normal to fit the legend and save it in a file alone
     plt.figure(figsize=(40, 8))
-    # create only the legend for the algorithms with the same colors as in the line plots
-    handles = [plt.Line2D([0], [0], color=sns.color_palette("colorblind", n_colors=len(mapping["algorithm"]))[i], lw=4) for i in range(len(mapping["algorithm"]))][::-1]
-    labels = [mapping["algorithm"][algo] for algo in mapping["algorithm"]][::-1]
-    # set up teh hanldes styles as dashed for the optimal algorithm and solid for the rest
-    for i in range(len(handles)):
-        if i==0:
-            handles[i].set_linestyle('--')
-        else:
-            handles[i].set_linestyle('-')
+    handles, labels = handles[::-1], labels[::-1]
     # do not include axes in the figure and save only the legend
     plt.gca().set_axis_off()
-    plt.legend(handles=handles, labels=labels, title='', ncol=2, loc='center', fontsize=80, frameon=True)
+    plt.legend(handles=handles, labels=labels, title='', ncol=2, loc='center', fontsize=80, frameon=True, handlelength=3)
     plt.savefig(f"figures/legend/regret_legend.pdf", bbox_inches='tight')
-    plt.clf()        
+    plt.clf()
 
 if __name__ == "__main__":
     configs = [
